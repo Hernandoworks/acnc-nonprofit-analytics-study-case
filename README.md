@@ -1,101 +1,197 @@
-# ACNC Non-Profit Analytics Study Case
+# Non-Profit Analytics — Study Case 01
 
-An end-to-end Australian charity analytics study case using the ACNC 2024 Annual Information Statement dataset.
+## ACNC Charity Data: Data Modelling, Complex SQL Analysis & Data Quality
 
-## Objective
-Demonstrate a production-style analytics workflow from government source data through SQL-first ingestion, data-quality validation, relational modelling and Power BI-ready analysis.
+An end-to-end Australian non-profit analytics study case using the ACNC 2024 Annual Information Statement dataset.
 
-## Pipeline
+### Case objective
+
+Demonstrate how to turn a large government charity dataset into a trustworthy analytical model and answer complex business questions with SQL.
+
+This case is deliberately focused on **data modelling, SQL analytics and data quality** before the Power BI presentation layer.
+
+### Study Case 01 scope
+
+**Primary skills demonstrated**
+
+- Relational data modelling
+- PostgreSQL / Supabase
+- SQL-first ingestion and transformation
+- Entity resolution and deduplication
+- Data-quality engineering
+- Source-to-target reconciliation
+- Complex analytical SQL
+- Financial ratio analysis
+- Workforce and volunteer analysis
+- Funding dependency analysis
+- Power BI-ready analytical views
+
+### Dataset baseline
+
+| Metric | Value |
+|---|---:|
+| Source records | **53,875** |
+| Distinct ABNs | **53,874** |
+| Known duplicate ABN records | **1** |
+| Source columns | **92** |
+| Canonical entity grain | **1 charity per ABN** |
+
+### Analytical question
+
+> **What can we learn about the scale, financial sustainability, funding model, workforce capacity and operating profile of Australian charities once the ACNC AIS data is correctly modelled and quality-assured?**
+
+### Architecture
 
 ```text
-ACNC source
-   ↓
-staging.acnc_ais_raw
-   ↓
+ACNC 2024 source
+        │
+        ▼
+raw / staging
+        │
+        ▼
 SQL profiling + cleansing
-   ↓
-ABN standardisation / deduplication
-   ↓
-ACNC relational model
-   ├── charities
-   ├── operations
-   ├── workforce
-   ├── financials
-   ├── reporting
-   ├── registration
-   └── fundraising
-   ↓
-SQL QA / reconciliation
-   ↓
-Analytics views
-   ↓
+        │
+        ├── ABN standardisation
+        ├── duplicate detection
+        ├── type conversion
+        └── completeness checks
+        │
+        ▼
+canonical charity entity
+        │
+        ├── operations
+        ├── workforce
+        ├── financials
+        ├── reporting
+        ├── registration
+        └── fundraising
+        │
+        ▼
+SQL validation + reconciliation
+        │
+        ▼
+analytical views
+        │
+        ▼
 Power BI
 ```
 
-## Current dataset baseline
+### Data model
 
-- Source records: **53,875**
-- Distinct ABNs: **53,874**
-- Known duplicate ABN records: **1**
-- Source columns: **92**
-- Canonical grain: **1 charity per ABN**
+```text
+                        acnc.charities
+                              │
+            ┌─────────────────┼─────────────────┐
+            │                 │                 │
+            ▼                 ▼                 ▼
+    acnc.financials    acnc.workforce    acnc.operations
+            │
+            ├── acnc.reporting
+            ├── acnc.registration
+            └── acnc.fundraising
+```
 
-## Phase 1 — Data Engineering
+**Key design decision:** `ABN` is the source business key; `charity_id` is the curated surrogate key.
 
-1. Source import
-2. Source table inventory
-3. Data-quality assessment
-4. SQL cleansing and typing
-5. ABN entity resolution
-6. Relational modelling
-7. Supabase ingestion
-8. SQL reconciliation
-9. Persistent QA report
+### Study case workflow
 
-## Phase 2 — Analysis
+1. Understand the source table
+2. Profile the 92 columns
+3. Assess completeness and uniqueness
+4. Detect and document duplicate entities
+5. Clean and type the source using SQL
+6. Build the relational model
+7. Validate row counts and non-null counts
+8. Reconcile critical financial measures source-to-target
+9. Test accounting business rules
+10. Build complex analytical SQL
+11. Publish Power BI-ready views
 
-Planned Power BI themes:
+### Complex SQL analysis themes
 
-- Charity landscape
-- Organisation size
-- Financial sustainability
-- Revenue and funding mix
-- Workforce and volunteers
-- Governance and reporting
-- Registration/fundraising footprint
-- Opportunity and trend analysis
+- Charity population by size and registration status
+- Revenue concentration and funding mix
+- Government funding dependency
+- Donation dependency
+- Net margin and financial sustainability
+- Liquidity / leverage indicators
+- Asset and liability structure
+- Workforce capacity and FTE
+- Volunteer intensity
+- KMP remuneration analysis
+- Comparison across charity-size segments
+- Identification of financially unusual organisations
+- Multi-dimensional charity segmentation
 
-## Data-quality position
+### Data quality standard
 
-The raw ACNC dataset is **fit for analytical use after controlled cleansing and validation**. It should not be described as perfectly clean. The known duplicate ABN is retained in the raw layer and resolved in the canonical entity layer.
+The case does **not** treat a matching row count as sufficient evidence of successful ingestion.
 
-## Technology
+Acceptance requires:
+
+- Raw record count reconciliation
+- Unique ABN reconciliation
+- Column-level NULL / non-NULL checks
+- Source-to-target measure reconciliation
+- Referential-integrity checks
+- Business-rule validation
+- Documented duplicate handling
+
+The database-side QA output is the authoritative control.
+
+### System metadata
+
+**Raw / staging**
+
+- `source_load_id`
+- `source_file`
+- `source_loaded_at`
+- `etl_batch_id`
+
+**Curated / end tables**
+
+- `source_file`
+- `etl_batch_id`
+- `created_at`
+- `updated_at`
+- `record_hash`
+
+### Repository structure
+
+```text
+Non-Profit-Analytics-Study-Case_01/
+│
+├── 01_source/
+│   └── README.md
+├── 02_sql/
+│   ├── 01_ingestion.sql
+│   ├── 02_cleaning.sql
+│   ├── 03_model.sql
+│   ├── 04_quality_checks.sql
+│   ├── 05_reconciliation.sql
+│   └── 06_complex_analysis.sql
+├── 03_notebooks/
+│   ├── 01_source_profile.ipynb
+│   ├── 02_data_quality.ipynb
+│   ├── 03_model_validation.ipynb
+│   └── 04_sql_analysis.ipynb
+├── 04_data_dictionary/
+│   └── README.md
+├── 05_model/
+│   └── README.md
+├── 06_powerbi/
+│   └── README.md
+└── 07_docs/
+    └── study_case_01.md
+```
+
+### Technology
 
 - PostgreSQL / Supabase
 - SQL
-- Python notebooks for documentation, SQL execution and exploratory visualisation
+- Python notebooks as an execution/documentation layer
 - Power BI
 
-## Repository structure
+### Portfolio positioning
 
-```text
-01_source/
-02_sql_pipeline/
-03_data_quality/
-04_model/
-05_notebooks/
-06_analytics/
-07_powerbi/
-08_docs/
-```
-
-## Governance
-
-System metadata is separated from business/source fields:
-
-- Raw: `source_file`, `source_loaded_at`, `etl_batch_id`, `source_load_id`
-- Curated: `source_file`, `etl_batch_id`, `created_at`, `updated_at`, `record_hash`
-
-## Security
-
-Do not commit Supabase passwords, service-role keys, database URLs or other secrets. Supabase RLS is currently a separate security hardening item and should be enabled with explicit policies before client-side exposure.
+This study case is intended to demonstrate **end-to-end analytical engineering**, not simply dashboard creation: source understanding → data modelling → quality assurance → complex SQL → decision-ready analytics.
