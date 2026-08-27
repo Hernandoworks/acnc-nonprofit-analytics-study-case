@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate repository structure
+        run: |
+          test -f README.md
+          test -f 03_data_engineering/dag.yml
+          test -d 01_data_preparation_modelling
+          test -d 02_complex_sql
+          test -d 03_data_engineering
+          test -d 04_powerbi
