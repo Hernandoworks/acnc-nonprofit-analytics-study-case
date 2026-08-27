@@ -1,0 +1,17 @@
+# Data
+*.csv
+*.xlsx
+*.xls
+/data/
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+venv/
+.env
+
+# Secrets
+*.pem
+*.key
+supabase.local.toml
