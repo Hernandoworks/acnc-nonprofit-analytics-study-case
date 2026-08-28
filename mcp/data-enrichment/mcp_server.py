@@ -1,6 +1,5 @@
 """MCP transport entry point using the official Python SDK."""
-from .server import EnrichmentService
-
+from server import EnrichmentService
 from mcp.server.fastmcp import FastMCP
 
 
