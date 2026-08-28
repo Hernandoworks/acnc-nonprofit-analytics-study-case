@@ -1,3 +1,4 @@
 requests>=2.32,<3
 ddgs>=9,<10
 pytest>=8,<9
+mcp>=1.0,<2
