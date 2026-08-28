@@ -1,21 +1,45 @@
-"""MCP transport entry point.
+"""MCP-compatible transport entry point.
 
-Keeps the transport dependency optional from the enrichment core. Install the
-MCP SDK in an environment that needs to expose these tools to an MCP client.
+Uses the official MCP Python SDK when installed. Core enrichment logic remains
+independent of the transport so the provider and business layers are reusable.
 """
 from .server import EnrichmentService
 
+try:
+    from mcp.server.fastmcp import FastMCP
+except ImportError:
+    FastMCP = None
 
-def build_service() -> EnrichmentService:
-    return EnrichmentService()
+
+def create_mcp():
+    if FastMCP is None:
+        raise RuntimeError("Install the optional MCP SDK to run the MCP transport")
+
+    app = FastMCP("data-enrichment")
+    service = EnrichmentService()
+
+    @app.tool()
+    def fetch_public_page(url: str):
+        """Fetch and deterministically extract public page attributes."""
+        return service.fetch_public_page(url).__dict__
+
+    @app.tool()
+    def extract_public_attributes(url: str):
+        """Extract public emails, phones, links and headings from a page."""
+        return service.extract_public_attributes(url).__dict__
+
+    @app.tool()
+    def enrich_batch(urls: list[str], max_items: int = 50):
+        """Enrich a bounded list of public URLs."""
+        return service.enrich_batch(urls, max_items=max_items)
+
+    @app.tool()
+    def semantic_candidates(headings: list[str]):
+        """Return headings that may contain program/service information."""
+        return service.semantic_candidates(headings)
+
+    return app
 
 
-# Tool definitions are intentionally capability-oriented. A transport adapter
-# can register these callables with the MCP SDK without coupling core logic to
-# the protocol implementation.
-TOOL_NAMES = [
-    "fetch_public_page",
-    "extract_public_attributes",
-    "enrich_batch",
-    "semantic_candidates",
-]
+if __name__ == "__main__":
+    create_mcp().run()
