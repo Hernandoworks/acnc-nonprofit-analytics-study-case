@@ -1,31 +1,21 @@
-"""MCP-compatible transport entry point.
-
-Uses the official MCP Python SDK when installed. Core enrichment logic remains
-independent of the transport so the provider and business layers are reusable.
-"""
+"""MCP transport entry point using the official Python SDK."""
 from .server import EnrichmentService
 
-try:
-    from mcp.server.fastmcp import FastMCP
-except ImportError:
-    FastMCP = None
+from mcp.server.fastmcp import FastMCP
 
 
-def create_mcp():
-    if FastMCP is None:
-        raise RuntimeError("Install the optional MCP SDK to run the MCP transport")
-
+def create_mcp() -> FastMCP:
     app = FastMCP("data-enrichment")
     service = EnrichmentService()
 
     @app.tool()
     def fetch_public_page(url: str):
-        """Fetch and deterministically extract public page attributes."""
+        """Fetch a bounded public page and extract deterministic attributes."""
         return service.fetch_public_page(url).__dict__
 
     @app.tool()
     def extract_public_attributes(url: str):
-        """Extract public emails, phones, links and headings from a page."""
+        """Extract public emails, phones, links and headings."""
         return service.extract_public_attributes(url).__dict__
 
     @app.tool()
@@ -35,7 +25,7 @@ def create_mcp():
 
     @app.tool()
     def semantic_candidates(headings: list[str]):
-        """Return headings that may contain program/service information."""
+        """Identify headings that may contain program or service information."""
         return service.semantic_candidates(headings)
 
     return app
