@@ -1,0 +1,10 @@
+# Canonical evidence record for any enrichment profile
+entity_id: ""
+entity_type: ""
+attribute: ""
+value: ""
+source_url: ""
+source_type: ""
+retrieved_dt: ""
+confidence: 0.0
+verification_status: "unverified"
