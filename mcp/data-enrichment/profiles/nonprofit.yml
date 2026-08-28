@@ -1,0 +1,32 @@
+profile: nonprofit
+version: 1
+
+identity:
+  primary_key: abn
+  fallback_keys:
+    - organisation_name
+
+fields:
+  - official_website
+  - organisational_email
+  - organisational_phone
+  - locations
+  - leadership
+  - responsible_people
+  - programs
+  - services
+  - mission
+  - latest_news
+  - annual_reports
+
+source_priority:
+  - government_register
+  - organisation_website
+  - public_annual_report
+  - other_public_source
+
+rules:
+  require_source_url: true
+  require_retrieved_dt: true
+  do_not_infer_private_contacts: true
+  verify_important_attributes: true
