@@ -1,5 +1,11 @@
-from mcp.data_enrichment.core.extractor import PageExtractor
-from mcp.data_enrichment.core.verification import Verifier
+import sys
+from pathlib import Path
+
+CORE = Path(__file__).resolve().parents[1] / "core"
+sys.path.insert(0, str(CORE))
+
+from extractor import PageExtractor
+from verification import Verifier
 
 
 def test_extractor_finds_public_contact_and_headings():
