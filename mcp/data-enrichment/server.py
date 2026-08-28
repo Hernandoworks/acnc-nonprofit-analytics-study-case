@@ -1,14 +1,8 @@
-"""Minimal capability-oriented MCP-style service facade.
-
-The business logic stays in core modules so a transport adapter can be
-replaced without changing enrichment behaviour. This file currently exposes
-plain Python callables; MCP transport wiring is intentionally isolated for the
-next integration step.
-"""
-from .core.batch import enrich_batch
-from .core.orchestrator import EnrichmentOrchestrator
-from .core.semantic import candidate_sections
-from .core.verification import Verifier
+"""Capability-oriented enrichment service facade."""
+from core.batch import enrich_batch
+from core.orchestrator import EnrichmentOrchestrator
+from core.semantic import candidate_sections
+from core.verification import Verifier
 
 
 class EnrichmentService:
